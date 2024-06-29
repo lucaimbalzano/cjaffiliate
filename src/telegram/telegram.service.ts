@@ -160,47 +160,76 @@ export class TelegramService {
   async getLastLinkMessageFromTheChannel(
     channelId: number,
     limit: number,
-  ): Promise<string> {
-    const messagesCjMainGroup = await this.getMessagesByChanngelId(
-      -1002052204449,
-      100,
-    );
-    for (let i = 0; i < messagesCjMainGroup.length; i++) {
-      if (messagesCjMainGroup[i].message.includes('🔼Missione video')) {
-        console.log(messagesCjMainGroup[i - 1]);
-        const date = new Date(messagesCjMainGroup[i - 1].date * 1000);
-
-        console.log(date.toISOString());
-        const editDate = new Date(messagesCjMainGroup[i - 1].editDate * 1000);
-        const idMessage = messagesCjMainGroup[i - 1].id;
-        const message = messagesCjMainGroup[i - 1].message;
-        const peerId = messagesCjMainGroup[i - 1].peerId;
-        console.log(
-          `Message: ${message} - Date: ${date} - edit Date: ${editDate}- Id: ${idMessage} - PeerId: ${peerId}`,
-        );
+    profile: Profiles,
+  ): Promise<any> {
+    try {
+      const messagesCjMainGroup = await this.getMessagesByChanngelId(
+        -1002052204449,
+        100,
+      );
+      for (let i = 0; i < messagesCjMainGroup.length; i++) {
+        if (messagesCjMainGroup[i].message.includes('🔼Missione video')) {
+          console.log(
+            '[LOGGER][' + i + '] Message:',
+            messagesCjMainGroup[i].message,
+          );
+          const editDate = new Date(messagesCjMainGroup[i - 1].editDate * 1000);
+          const idMessage = messagesCjMainGroup[i - 1].id;
+          const message = messagesCjMainGroup[i - 1].message;
+          const peerId = messagesCjMainGroup[i - 1].peerId;
+          const job = new Job();
+          job.updatedAt = new Date();
+          job.flow_process = 'TELEGRAM:LINK';
+          job.fkProfiles = profile;
+          job.channel_idMessage = idMessage;
+          job.channel_message = message;
+          job.channel_peerId = peerId;
+          job.channel_editDate = editDate;
+          await this.jobRepository.update(profile.id, job);
+          return { result: true, link: message };
+        }
       }
+      return { result: false, link: '' };
+    } catch (error) {
+      console.error('Error fetching messages from channel:', error);
+      const job = await this.jobRepository.findOne({
+        where: { fkProfiles: profile },
+      });
+      job.flow_process = 'ERROR';
+      job.errors = error.message;
+      await this.jobRepository.update(profile.id, job);
+      return { result: false, link: '' };
     }
-    return '';
   }
 
   async processMissions(): Promise<void> {
     //FLOW PROCESS
-
     // START CRON JOB to Recall the processMissions
     const profiles = await this.profilesRepository.find();
     for (let i = 0; i < profiles.length; i++) {
-      const job = new Job();
-      job.updatedAt = new Date();
-      job.flow_process = 'STARTED';
-      job.fkProfiles = profiles[i];
-      await this.jobRepository.save(job);
-
+      let messageRetrieved = await this.getLastLinkMessageFromTheChannel(
+        null,
+        null,
+        profiles[i] as Profiles,
+      );
       // TELEGRAM LINK RETRIVED
-
-      // YOUTUBE AUTH
-      //YOUTUBE SCREEN
-      //TELEGRAM PAY
+      if (messageRetrieved.result) {
+        // YOUTUBE AUTH
+        console.log(
+          '[LOGGER][' + i + ']Link message retrieved:',
+          messageRetrieved.link,
+        );
+      } else {
+        console.log('[LOGGER][' + i + '] No link message retrieved');
+      }
     }
+    //   const job = new Job();
+    //   job.updatedAt = new Date();
+    //   job.flow_process = 'STARTED';
+    //   job.fkProfiles = profiles[i];
+    //   await this.jobRepository.save(job);
+    //YOUTUBE SCREEN
+    //TELEGRAM PAY
   }
 }
 

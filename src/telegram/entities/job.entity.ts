@@ -55,4 +55,24 @@ export class Job {
     nullable: true,
   })
   errors?: string;
+
+  @Column({
+    nullable: true,
+  })
+  channel_idMessage?: number;
+
+  @Column({
+    nullable: true,
+  })
+  channel_message?: string;
+
+  @Column({
+    nullable: true,
+  })
+  channel_peerId?: string;
+
+  @Column({
+    nullable: true,
+  })
+  channel_editDate?: Date;
 }
