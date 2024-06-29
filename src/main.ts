@@ -7,8 +7,8 @@ async function bootstrap() {
 
   // Swagger setup
   const config = new DocumentBuilder()
-    .setTitle('Houseav Backend')
-    .setDescription('Houseav Backend project')
+    .setTitle('CJAFFILIATE Driver - Luca Imbalzano')
+    .setDescription('Telegram and Youtube automation')
     .setVersion('1.0')
     .addBearerAuth(
       { in: 'header', type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
@@ -16,12 +16,34 @@ async function bootstrap() {
     )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  });
-  await app.listen(3000);
-}
-bootstrap();
+    
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
+    });
+    await app.listen(3000);
+  }
+  console.log(`  
+
+    ████████▓▓▓▓░░▒▒░░▒▒░░░░  ░░░░  ░░░░▒▒░░▒▒░░▓▓▓▓████████
+    ██████▓▓▒▒▓▓▒▒  ▒▒░░░░  ░░    ░░  ░░░░▒▒  ▒▒▓▓▒▒▓▓██████
+    ██▓▓██▓▓▓▓▒▒░░▒▒  ░░                ░░  ▒▒░░▒▒▓▓▓▓██▓▓██
+    ████▓▓▒▒▓▓▒▒▒▒░░░░                    ░░░░▒▒▒▒▓▓▒▒▓▓████
+    ████▓▓▓▓▒▒░░░░░░                        ░░░░░░▒▒▓▓▓▓████
+    ██▓▓▓▓▒▒▒▒▒▒░░                            ░░▒▒▒▒▒▒▓▓▓▓██
+    ▓▓▓▓▒▒▓▓▒▒▒▒  ░░                        ░░  ▒▒▒▒▓▓▒▒▓▓▓▓
+    ██▓▓▓▓▒▒▒▒░░░░        CJAFFILIATE         ░░░░▒▒▒▒▓▓▓▓██
+    ██▓▓▓▓▒▒▒▒░░░░          DRIVER            ░░░░▒▒▒▒▓▓▓▓██
+    ▓▓▓▓▒▒▓▓▒▒▒▒  ░░                        ░░  ▒▒▒▒▓▓▒▒▓▓▓▓
+    ██▓▓▓▓▒▒▒▒▒▒░░                            ░░▒▒▒▒▒▒▓▓▓▓██
+    ████▓▓▓▓▒▒░░░░░░                        ░░░░░░▒▒▓▓▓▓████
+    ████▓▓▒▒▓▓▒▒▒▒░░░░                    ░░░░▒▒▒▒▓▓▒▒▓▓████
+    ██▓▓██▓▓▓▓▒▒░░▒▒  ░░                ░░  ▒▒░░▒▒▓▓▓▓██▓▓██
+    ██████▓▓▒▒▓▓▒▒  ▒▒░░░░  ░░    ░░  ░░░░▒▒  ▒▒▓▓▒▒▓▓██████
+    ████████▓▓▓▓░░▒▒░░▒▒░░░░  ░░░░  ░░░░▒▒░░▒▒░░▓▓▓▓████████
+    
+    `)
+  bootstrap();
+  

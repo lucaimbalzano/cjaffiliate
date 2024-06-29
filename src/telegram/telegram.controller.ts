@@ -1,34 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { TelegramService } from './telegram.service';
-import { CreateTelegramDto } from './dto/create-telegram.dto';
-import { UpdateTelegramDto } from './dto/update-telegram.dto';
+import { SendMessageByUsername } from './dto/send-message-by-username.dto';
 
 @Controller('telegram')
 export class TelegramController {
   constructor(private readonly telegramService: TelegramService) {}
 
-  @Post()
-  create(@Body() createTelegramDto: CreateTelegramDto) {
-    return this.telegramService.create(createTelegramDto);
+  @Get('initialize')
+  async initialize() {
+    await this.telegramService.initialize();
+    return 'Initialized';
   }
 
-  @Get()
-  findAll() {
-    return this.telegramService.findAll();
+  @Post('send/:chatId')
+  async sendMessage(@Param('chatId') chatId: number) {
+    await this.telegramService.sendMessageTest(chatId);
+    return 'Message sent';
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.telegramService.findOne(+id);
+  @Post('send-username/:username')
+  async sendMessageToUsername(
+    @Param('username') username: string,
+    @Body('message') sender: SendMessageByUsername,
+  ) {
+    await this.telegramService.sendMessageToUsername(username, sender.message);
+    return 'Message sent';
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTelegramDto: UpdateTelegramDto) {
-    return this.telegramService.update(+id, updateTelegramDto);
+  @Get('read/:chatId')
+  async readMessages(@Param('chatId') chatId: number) {
+    const messages = await this.telegramService.readMessages(chatId);
+    return messages;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.telegramService.remove(+id);
+  @Get('/get-all-chat-ids')
+  async getAllChatIds() {
+    return await this.telegramService.getAllChatIds();
+  }
+
+  @Get('/get-all-chats')
+  async getAllChats() {
+    return await this.telegramService.getAllChats();
+  }
+
+  @Get('/get-chat-id-by-username/:username')
+  async getChatIdByUsername(@Param('username') username: string) {
+    return await this.telegramService.getChatIdByUsername(username);
+  }
+
+  @Get('/start-worker')
+  async startWorker() {
+    return await this.telegramService.processMissions();
   }
 }

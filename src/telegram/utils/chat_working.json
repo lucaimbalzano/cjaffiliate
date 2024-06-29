@@ -1,0 +1,184 @@
+[
+    // MAIN GROUP PHOTO DITRIBUITIONS BOT
+    {
+        "flags": 3204096,
+        "out": false,
+        "mentioned": false,
+        "mediaUnread": false,
+        "silent": true,
+        "post": true,
+        "fromScheduled": false,
+        "legacy": false,
+        "editHide": true,
+        "pinned": false,
+        "noforwards": false,
+        "invertMedia": false,
+        "flags2": 0,
+        "offline": false,
+        "id": 87287,
+        "fromId": null,
+        "fromBoostsApplied": null,
+        "peerId": {
+          "channelId": "2052204449",
+          "className": "PeerChannel"
+        },
+        "savedPeerId": null,
+        "fwdFrom": null,
+        "viaBotId": null,
+        "viaBusinessBotId": null,
+        "replyTo": null,
+        "date": 1719225437,
+        "message": "Avviso di manutenzione del sistema Siamo spiacenti di informarti che dopo la manutenzione del sistema di oggi, alcune aree presentano ancora fluttuazioni della rete di sistema e non possono funzionare normalmente. Abbiamo deciso di sospendere l'invio delle attività oggi.\n\nLa data di apertura specifica verrà posticipata a domani (25), attendere la notifica nel gruppo!\n\nGli stipendi accumulati in questo compito verranno saldati domani. Ci scusiamo per l'inconveniente e vi ringraziamo per il vostro supporto.",
+        "media": null,
+        "replyMarkup": null,
+        "entities": null,
+        "views": 1420,
+        "forwards": 3,
+        "replies": null,
+        "editDate": 1719225446,
+        "postAuthor": null,
+        "groupedId": null,
+        "reactions": {
+          "flags": 0,
+          "min": false,
+          "canSeeList": false,
+          "reactionsAsTags": false,
+          "results": [
+            {
+              "flags": 0,
+              "chosenOrder": null,
+              "reaction": {
+                "emoticon": "👍",
+                "className": "ReactionEmoji"
+              },
+              "count": 105,
+              "className": "ReactionCount"
+            },
+            {
+              "flags": 0,
+              "chosenOrder": null,
+              "reaction": {
+                "emoticon": "🙉",
+                "className": "ReactionEmoji"
+              },
+              "count": 23,
+              "className": "ReactionCount"
+            },
+            {
+              "flags": 0,
+              "chosenOrder": null,
+              "reaction": {
+                "emoticon": "❤",
+                "className": "ReactionEmoji"
+              },
+              "count": 21,
+              "className": "ReactionCount"
+            },
+            {
+              "flags": 0,
+              "chosenOrder": null,
+              "reaction": {
+                "emoticon": "🔥",
+                "className": "ReactionEmoji"
+              },
+              "count": 19,
+              "className": "ReactionCount"
+            },
+            {
+              "flags": 0,
+              "chosenOrder": null,
+              "reaction": {
+                "emoticon": "🤪",
+                "className": "ReactionEmoji"
+              },
+              "count": 9,
+              "className": "ReactionCount"
+            }
+          ],
+          "recentReactions": null,
+          "className": "MessageReactions"
+        },
+        "restrictionReason": null,
+        "ttlPeriod": null,
+        "quickReplyShortcutId": null,
+        "effect": null,
+        "factcheck": null,
+        "className": "Message"
+      },  
+    // CHAT WITH PAYMENT MANAGER BOT  
+    {
+        "flags": 640,
+        "out": false,
+        "mentioned": false,
+        "mediaUnread": false,
+        "silent": false,
+        "post": false,
+        "fromScheduled": false,
+        "legacy": false,
+        "editHide": false,
+        "pinned": false,
+        "noforwards": false,
+        "invertMedia": false,
+        "flags2": 0,
+        "offline": false,
+        "id": 7329,
+        "fromId": null,
+        "fromBoostsApplied": null,
+        "peerId": {
+          "userId": "5219882605",
+          "className": "PeerUser"
+        },
+        "savedPeerId": null,
+        "fwdFrom": null,
+        "viaBotId": null,
+        "viaBusinessBotId": null,
+        "replyTo": null,
+        "date": 1718476540,
+        "message": "https://t.me/+r1RgKfXFsUJiMDg1",
+        "media": {
+          "flags": 16,
+          "forceLargeMedia": false,
+          "forceSmallMedia": false,
+          "manual": false,
+          "safe": true,
+          "webpage": {
+            "flags": 1,
+            "id": "4509935624837071008",
+            "url": "https://t.me/+r1RgKfXFsUJiMDg1",
+            "className": "WebPageEmpty"
+          },
+          "className": "MessageMediaWebPage"
+        },
+        "replyMarkup": null,
+        "entities": [
+          {
+            "offset": 0,
+            "length": 30,
+            "className": "MessageEntityUrl"
+          }
+        ],
+        "views": null,
+        "forwards": null,
+        "replies": null,
+        "editDate": null,
+        "postAuthor": null,
+        "groupedId": null,
+        "reactions": null,
+        "restrictionReason": null,
+        "ttlPeriod": null,
+        "quickReplyShortcutId": null,
+        "effect": null,
+        "factcheck": null,
+        "className": "Message"
+      }
+]
+
+
+## UTILS
+https://gram.js.org/beta/modules/utils.html
+
+https://gram.js.org/beta/classes/TelegramClient.html
+  - https://gram.js.org/beta/classes/TelegramClient.html#sendFile
+  - https://gram.js.org/beta/classes/TelegramClient.html#getMessages
+  - https://gram.js.org/beta/classes/TelegramClient.html#getDialogs
+  
