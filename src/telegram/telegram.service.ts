@@ -187,11 +187,20 @@ export class TelegramService {
     //FLOW PROCESS
 
     // START CRON JOB to Recall the processMissions
-    // TELEGRAM LINK RETRIVED
-    // YOUTUBE AUTH
-    //YOUTUBE SCREEN
-    //TELEGRAM PAY
-    const job = new Job();
+    const profiles = await this.profilesRepository.find();
+    for (let i = 0; i < profiles.length; i++) {
+      const job = new Job();
+      job.updatedAt = new Date();
+      job.flow_process = 'STARTED';
+      job.fkProfiles = profiles[i];
+      await this.jobRepository.save(job);
+
+      // TELEGRAM LINK RETRIVED
+
+      // YOUTUBE AUTH
+      //YOUTUBE SCREEN
+      //TELEGRAM PAY
+    }
   }
 }
 
