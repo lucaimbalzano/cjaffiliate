@@ -8,11 +8,11 @@ services:
       - ./cjaffiliate_pgdata:/var/lib/postgresql/data
     restart: always
     environment:
-      POSTGRES_USER: lucas
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: sladhfbdslfbsad
+      POSTGRES_PASSWORD: ldskjhafldskjfhbsdalk0349875342089
       POSTGRES_DB: cjaffiliatedb
     ports:
-      - "5433:5432"
+      - "5444:5432"
 
 volumes:
   cjaffiliate_pgdata:

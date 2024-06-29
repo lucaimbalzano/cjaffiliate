@@ -1,22 +1,36 @@
+/* eslint-disable prettier/prettier */
 /*
  * God is Love.
  */
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
 import { TelegramClient } from 'telegram';
-import { Api } from 'telegram/tl';
 import { StoreSession, StringSession } from 'telegram/sessions';
+import PeerUser from 'telegram/tl/api';
+import { Api } from 'telegram/tl';
 import input from 'input';
 import bigInt from 'big-integer';
-import PeerUser from 'telegram/tl/api';
+import { Repository } from 'typeorm';
+import { Job } from './entities/job.entity';
+import { Banks_Account } from './entities/banksAccount.entity';
+import { Profiles } from './entities/profiles.entity';
 
 @Injectable()
 export class TelegramService {
   private client: TelegramClient;
   private storeSession: StoreSession;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(Profiles)
+    private profilesRepository: Repository<Profiles>,
+    @InjectRepository(Banks_Account)
+    private banksAccountRepository: Repository<Banks_Account>,
+    @InjectRepository(Job)
+    private jobRepository: Repository<Job>,
+  ) {
     const apiId = this.configService.get<string>('TELEGRAM_API_ID');
     const apiHash = this.configService.get<string>('TELEGRAM_API_HASH');
     const storeSession = new StoreSession('store_session'); // You can save your session here
@@ -143,18 +157,10 @@ export class TelegramService {
     // console.log(channel);
   }
 
-  async processMissions(): Promise<void> {
-    // try {
-    /*
-      Telegram
-      *      "peerId": {
-        "userId": "777000",
-        "className": "PeerUser"
-      },
-      */
-    // 5219882605 paymentbot --> channel id
-    // 2052204449 cjmaingroup -- channel id
-
+  async getLastLinkMessageFromTheChannel(
+    channelId: number,
+    limit: number,
+  ): Promise<string> {
     const messagesCjMainGroup = await this.getMessagesByChanngelId(
       -1002052204449,
       100,
@@ -174,6 +180,28 @@ export class TelegramService {
         );
       }
     }
-    // console.log(messagesCjMainGroup);
+    return '';
+  }
+
+  async processMissions(): Promise<void> {
+    //FLOW PROCESS
+
+    // START CRON JOB to Recall the processMissions
+    // TELEGRAM LINK RETRIVED
+    // YOUTUBE AUTH
+    //YOUTUBE SCREEN
+    //TELEGRAM PAY
+    const job = new Job();
   }
 }
+
+// try {
+/*
+  Telegram
+  *      "peerId": {
+    "userId": "777000",
+    "className": "PeerUser"
+  },
+  */
+// 5219882605 paymentbot --> channel id
+// 2052204449 cjmaingroup -- channel id
