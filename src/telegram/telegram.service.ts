@@ -16,6 +16,12 @@ import { Repository } from 'typeorm';
 import { Job } from './entities/job.entity';
 import { Banks_Account } from './entities/banksAccount.entity';
 import { Profiles } from './entities/profiles.entity';
+import { setTimeout } from 'node:timers/promises';
+import {
+  youtubeAuthentication,
+  youtubeAuthenticationByFetch,
+} from 'src/youtube/utils/functions';
+import { BASE_URI_YT_CJ } from 'src/youtube/utils/costants';
 
 @Injectable()
 export class TelegramService {
@@ -65,6 +71,29 @@ export class TelegramService {
     // console.log(`StringSession: ${this.client.session.save()}`);
   }
 
+  async initializeByNumber(number: string) {
+    console.log(`  
+
+      ████████▓▓▓▓░░▒▒░░▒▒░░░░  ░░░░  ░░░░▒▒░░▒▒░░▓▓▓▓████████
+      ██████▓▓▒▒▓▓▒▒  ▒▒░░░░  ░░    ░░  ░░░░▒▒  ▒▒▓▓▒▒▓▓██████
+      ██▓▓██▓▓▓▓▒▒░░▒▒  ░░                ░░  ▒▒░░▒▒▓▓▓▓██▓▓██
+      ██▓▓██▓▒▒=========== Initialization ===========▒▒▓██▓▓██
+      `);
+    await this.client.start({
+      phoneNumber: number,
+      password: async () =>
+        await input.text('██▓▒▒ Please enter your password: '),
+      phoneCode: async () =>
+        await input.text('██▓▒▒Please enter the code you received: '),
+      onError: (err) => console.log(err),
+    });
+
+    console.log('You are now connected.');
+    const dialog = await this.client.getDialogs({}); // when you login the first time
+    console.log('Total Dialogs found:', dialog.length);
+    // console.log(`StringSession: ${this.client.session.save()}`);
+  }
+
   async sendMessageTest(chatId: number) {
     // Test purpose
     const msg = '👋🏼 Ciao! Come posso aiutarti oggi?';
@@ -83,20 +112,6 @@ export class TelegramService {
     const result = await this.client.getMessages(chatId, { limit: 10 });
     return result;
   }
-  // async readMessagesWithOptions(chatId: number, limit: number) {
-  //   // Correctly define the peerId object
-  //   const peerId = {
-  //     channelId: chatId, // Use the chatId parameter to make the function dynamic
-  //     className: 'PeerChannel',
-  //   };
-
-  //   // Fetch the messages
-  //   const result = await this.client.getMessages(
-  //     { peer: peerId },
-  //     { limit: limit },
-  //   );
-  //   return result;
-  // }
 
   async getMessagesByChanngelId(channelId: number, limit: number) {
     let messages;
@@ -161,6 +176,7 @@ export class TelegramService {
     channelId: number,
     limit: number,
     profile: Profiles,
+    job: Job,
   ): Promise<any> {
     try {
       const messagesCjMainGroup = await this.getMessagesByChanngelId(
@@ -177,7 +193,6 @@ export class TelegramService {
           const idMessage = messagesCjMainGroup[i - 1].id;
           const message = messagesCjMainGroup[i - 1].message;
           const peerId = messagesCjMainGroup[i - 1].peerId;
-          const job = new Job();
           job.updatedAt = new Date();
           job.flow_process = 'TELEGRAM:LINK';
           job.fkProfiles = profile;
@@ -186,7 +201,7 @@ export class TelegramService {
           job.channel_peerId = peerId;
           job.channel_editDate = editDate;
           await this.jobRepository.update(profile.id, job);
-          return { result: true, link: message };
+          return { result: true, link: message, idJob: job.id };
         }
       }
       return { result: false, link: '' };
@@ -202,34 +217,97 @@ export class TelegramService {
     }
   }
 
+  async startJob(profile: Profiles) {
+    const job = new Job();
+    job.updatedAt = new Date();
+    job.flow_process = 'STARTED';
+    job.fkProfiles = profile;
+    return await this.jobRepository.save(job);
+  }
+
+  async sendScreenshotToTelegram(
+    chatId: number,
+    pathToTheScreenshot: string,
+    link: string,
+  ) {
+    const dialog = await this.client.getDialogs({});
+    await this.client.sendMessage(chatId, {
+      message: 'screenshot fatto;\n link: ' + link,
+      file: pathToTheScreenshot,
+    });
+  }
+
   async processMissions(): Promise<void> {
-    //FLOW PROCESS
-    // START CRON JOB to Recall the processMissions
     const profiles = await this.profilesRepository.find();
     for (let i = 0; i < profiles.length; i++) {
-      let messageRetrieved = await this.getLastLinkMessageFromTheChannel(
+      const numberWithPrefix = profiles[i].prefix + profiles[i].number;
+      await this.initializeByNumber(numberWithPrefix);
+      const jobStarted = await this.startJob(profiles[i] as Profiles);
+      const messageRetrieved = await this.getLastLinkMessageFromTheChannel(
         null,
         null,
         profiles[i] as Profiles,
+        jobStarted as Job,
       );
-      // TELEGRAM LINK RETRIVED
       if (messageRetrieved.result) {
-        // YOUTUBE AUTH
         console.log(
           '[LOGGER][' + i + ']Link message retrieved:',
           messageRetrieved.link,
         );
+
+        const url =
+          BASE_URI_YT_CJ +
+          'like-and-screenshot?' +
+          'email=' +
+          profiles[i].email +
+          '&password=' +
+          profiles[i].password +
+          '&link=' +
+          messageRetrieved.link +
+          '&id_profile=' +
+          profiles[i].id +
+          '&id_job=' +
+          messageRetrieved.idJob;
+        const pathToTheScreenshot = await youtubeAuthenticationByFetch(url);
+        if (pathToTheScreenshot) {
+          jobStarted.flow_process = 'YOUTUBE:AUTH:SCREEN';
+          jobStarted.screenshot_folder = pathToTheScreenshot;
+          jobStarted.updatedAt = new Date();
+          await this.jobRepository.update(messageRetrieved.idJob, jobStarted);
+          await this.sendScreenshotToTelegram(
+            5219882605,
+            pathToTheScreenshot,
+            messageRetrieved.link,
+          );
+
+          jobStarted.flow_process = 'TELEGRAM:CHAT:PAY';
+          jobStarted.screenshot_folder = pathToTheScreenshot;
+          jobStarted.updatedAt = new Date();
+          await this.jobRepository.update(messageRetrieved.idJob, jobStarted);
+
+          setTimeout(220);
+          const messages = await this.client.getMessages(5219882605, {
+            limit: 5,
+          });
+
+          for (let i = 0; i < messages.length; i++) {
+            if (messages[i].message.includes('Stipendio accumulato')) {
+              jobStarted.flow_process = 'CLOSED';
+              jobStarted.updatedAt = new Date();
+              jobStarted.message = messages[i].message + ';';
+              await this.jobRepository.update(
+                messageRetrieved.idJob,
+                jobStarted,
+              );
+            }
+          }
+        }
+        await this.client.session.close();
       } else {
         console.log('[LOGGER][' + i + '] No link message retrieved');
+        await this.client.session.close();
       }
     }
-    //   const job = new Job();
-    //   job.updatedAt = new Date();
-    //   job.flow_process = 'STARTED';
-    //   job.fkProfiles = profiles[i];
-    //   await this.jobRepository.save(job);
-    //YOUTUBE SCREEN
-    //TELEGRAM PAY
   }
 }
 
@@ -241,5 +319,5 @@ export class TelegramService {
     "className": "PeerUser"
   },
   */
-// 5219882605 paymentbot --> channel id
+// 5219882605 paymentbot --> chat id
 // 2052204449 cjmaingroup -- channel id

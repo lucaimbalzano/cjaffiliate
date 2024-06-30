@@ -1,4 +1,9 @@
-import puppeteer, { Page } from 'puppeteer';
+import { Page } from 'puppeteer';
+const puppeteer = require('puppeteer-extra');
+
+// add stealth plugin and use defaults (all evasion techniques)
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
 export const launchPuppeteer = async function () {
   try {

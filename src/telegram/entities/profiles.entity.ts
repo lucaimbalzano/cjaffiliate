@@ -25,6 +25,9 @@ export class Profiles {
   @Column({ nullable: false, default: '+39' })
   prefix: string;
 
+  @Column({ nullable: true })
+  password?: string;
+
   @Column({ nullable: false, default: true })
   availability_number: boolean;
 

@@ -66,3 +66,6 @@ docker-compose.yml
 # Docker
 .docker-compose.yml
 cjaffiliate_pgdata/
+
+  user-data/
+  store_session/
