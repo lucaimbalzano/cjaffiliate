@@ -5,6 +5,7 @@ import { Job } from './entities/job.entity';
 import { Banks_Account } from './entities/banksAccount.entity';
 import { Profiles } from './entities/profiles.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     Job,
     Banks_Account,
     Profiles,
+    ScheduleModule.forRoot(),
   ],
   controllers: [TelegramController],
   providers: [TelegramService],

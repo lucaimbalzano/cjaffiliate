@@ -21,7 +21,8 @@ import {
   youtubeAuthentication,
   youtubeAuthenticationByFetch,
 } from 'src/youtube/utils/functions';
-import { BASE_URI_YT_CJ } from 'src/youtube/utils/costants';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { BASE_URI_YT_CJ, EVERY_20_MINUTES } from 'src/youtube/utils/costants';
 
 @Injectable()
 export class TelegramService {
@@ -113,6 +114,14 @@ export class TelegramService {
     return result;
   }
 
+  async getMessagesArray(chatId: number, limit = 1000): Promise<string[]> {
+  const result = await this.client.getMessages(chatId, { limit });
+  // Filter out messages that have a 'message' property and return only the text
+  return result
+    .filter((msg) => typeof msg.message === 'string' && msg.message.length > 0)
+    .map((msg) => msg.message);
+}
+
   async getMessagesByChanngelId(channelId: number, limit: number) {
     let messages;
     try {
@@ -131,6 +140,27 @@ export class TelegramService {
     const chatIds = dialogs.map((dialog) => dialog.id);
     return chatIds;
   }
+
+async getAllGroupChats() {
+  const dialogs = await this.client.getDialogs();
+  // Filter for groups: either Chat or Channel with megagroup=true
+  const groups = dialogs.filter((dialog) => {
+    // dialog.entity can be Channel or Chat
+    if (
+      dialog.entity &&
+      ((dialog.entity.className === 'Channel' && dialog.entity.megagroup) ||
+        dialog.entity.className === 'Chat')
+    ) {
+      return true;
+    }
+    return false;
+  });
+  return groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    className: group.entity ? group.entity.className : undefined,
+  }));
+}
 
   async getAllChats() {
     const dialogs = await this.client.getDialogs();
@@ -237,6 +267,7 @@ export class TelegramService {
     });
   }
 
+  @Cron(EVERY_20_MINUTES)
   async processMissions(): Promise<void> {
     const profiles = await this.profilesRepository.find();
     for (let i = 0; i < profiles.length; i++) {

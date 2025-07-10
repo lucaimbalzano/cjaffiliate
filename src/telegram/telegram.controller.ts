@@ -33,6 +33,17 @@ export class TelegramController {
     return messages;
   }
 
+  @Get('read/array-format/:chatId')
+  async readMessagesGetArray(@Param('chatId') chatId: number) {
+    const messages = await this.telegramService.getMessagesArray(chatId);
+    return messages;
+  }
+
+  @Get('/get-all-groups')
+  async getAllGroups() {
+    return await this.telegramService.getAllGroupChats();
+  }
+
   @Get('/get-all-chat-ids')
   async getAllChatIds() {
     return await this.telegramService.getAllChatIds();

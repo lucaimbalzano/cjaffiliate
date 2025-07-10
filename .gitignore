@@ -69,3 +69,5 @@ cjaffiliate_pgdata/
 
   user-data/
   store_session/
+
+.vscode
